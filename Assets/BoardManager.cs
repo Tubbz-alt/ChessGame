@@ -14,7 +14,7 @@ public class BoardManager : MonoBehaviour {
 	private int selectionY = -1;
 
     public List<GameObject> chessmanPrefabs;
-    private List<GameObject> activeChessman = new List<GameObject>();
+    private List<GameObject> activeChessman;
 
     private Quaternion orientation = Quaternion.Euler(0, 180, 0);
 
@@ -115,7 +115,8 @@ public class BoardManager : MonoBehaviour {
         GameObject go = Instantiate(chessmanPrefabs[index], GetTileCenter(x,y), orientation) as GameObject;
         go.transform.SetParent(transform);
         Chessmans [x, y] = go.GetComponent<Chessman> ();
-        Chessmans [x, y].SetPosition (x, y);
+		Chessman debug = go.GetComponent<Chessman> ();
+        Chessmans [x, y].SetPosition(x, y);
         activeChessman.Add (go);
     }
 	
@@ -155,7 +156,7 @@ public class BoardManager : MonoBehaviour {
 
         if (Input.GetMouseButtonDown (0))
         {
-            if(selectionX >=0 && selectionY >= 0)
+            if(selectionX >= 0 && selectionY >= 0)
             {
                 if(selectedChessman == null)
                 {
