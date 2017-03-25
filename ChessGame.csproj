@@ -88,6 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Bishop.cs" />
+    <Compile Include="Assets\BoardHighlights.cs" />
     <Compile Include="Assets\BoardManager.cs" />
     <Compile Include="Assets\Chessman.cs" />
     <Compile Include="Assets\King.cs" />
