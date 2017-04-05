@@ -16,7 +16,6 @@ C:\Users\willi\Documents\ChessGame\Temp\bin\Debug\Unity.UNetWeaver.dll
 C:\Users\willi\Documents\ChessGame\Temp\bin\Debug\Unity.CecilTools.dll
 C:\Users\willi\Documents\ChessGame\Temp\bin\Debug\Mono.Cecil.Pdb.dll
 C:\Users\willi\Documents\ChessGame\Temp\bin\Debug\Mono.Cecil.Mdb.dll
-C:\Users\willi\Documents\ChessGame\Temp\bin\Debug\Assembly-CSharp-firstpass.pdb
 C:\Users\willi\Documents\ChessGame\Temp\bin\Debug\UnityEngine.xml
 C:\Users\willi\Documents\ChessGame\Temp\bin\Debug\UnityEditor.xml
 C:\Users\willi\Documents\ChessGame\Temp\bin\Debug\UnityEngine.UI.xml

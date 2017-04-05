@@ -18,4 +18,6 @@ public abstract class Chessman : MonoBehaviour
     {
         return new bool[8,8];
     }
+
+    public abstract string GetChessmanType();
 }

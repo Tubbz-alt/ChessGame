@@ -3,7 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Knight : Chessman {
-    
+
+    public override string GetChessmanType()
+    {
+        return "Knight";
+    }
+
     public override bool[,] PossibleMove()
     {
         bool[,] r = new bool[8, 8];

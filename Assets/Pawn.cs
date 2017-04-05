@@ -4,7 +4,12 @@ using UnityEngine;
 
 public class Pawn : Chessman {
 
-	public override bool[,] PossibleMove()
+    public override string GetChessmanType()
+    {
+        return "Pawn";
+    }
+
+    public override bool[,] PossibleMove()
     {
         bool[,] r = new bool[8, 8];
         Chessman c, c2;

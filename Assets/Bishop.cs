@@ -1,9 +1,14 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Bishop : Chessman
 {
+    public override string GetChessmanType()
+    {
+        return "Bishop";
+    }
 
     public override bool[,] PossibleMove()
     {

@@ -52,6 +52,7 @@
      <Compile Include="Assets\Chessman.cs" />
      <Compile Include="Assets\King.cs" />
      <Compile Include="Assets\Knight.cs" />
+     <Compile Include="Assets\Move.cs" />
      <Compile Include="Assets\Pawn.cs" />
      <Compile Include="Assets\Queen.cs" />
      <Compile Include="Assets\Rook.cs" />

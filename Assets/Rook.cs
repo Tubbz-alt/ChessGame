@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class Rook : Chessman
 {
+    public override string GetChessmanType()
+    {
+        return "Rook";
+    }
 
     public override bool[,] PossibleMove()
     {
