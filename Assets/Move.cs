@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Assets
 {
-    class Move
+    public class Move
     {
 
         private int oldX;

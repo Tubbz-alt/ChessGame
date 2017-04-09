@@ -70,7 +70,7 @@ public class King : Chessman
         //Middle Right
         if (CurrentX != 7)
         {
-            c = BoardManager.Instance.Chessmans[CurrentX - 1, CurrentY];
+            c = BoardManager.Instance.Chessmans[CurrentX + 1, CurrentY];
             if (c == null)
                 r[CurrentX + 1, CurrentY] = true;
             else if (isWhite != c.isWhite)

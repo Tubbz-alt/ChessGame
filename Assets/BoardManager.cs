@@ -1,11 +1,12 @@
-﻿using System.Collections;
+﻿using Assets;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 
 public class BoardManager : MonoBehaviour {
 
     public static BoardManager Instance{ set; get; }
-    private bool[,] allowedMoves { set; get; }
 
     public Chessman[,] Chessmans { set; get; }
     private Chessman selectedChessman;
@@ -127,6 +128,13 @@ public class BoardManager : MonoBehaviour {
         Chessmans [x, y] = go.GetComponent<Chessman> ();
 		Chessman debug = go.GetComponent<Chessman> ();
         Chessmans [x, y].SetPosition(x, y);
+
+        if (y == 6 || y == 7) {
+            Chessmans[x, y].isWhite = false;
+        } else
+        {
+            Chessmans[x, y].isWhite = true;
+        }
         activeChessman.Add (go);
     }
 	
@@ -161,24 +169,33 @@ public class BoardManager : MonoBehaviour {
     // Update is called once per frame
     private void Update()
     {
-        UpdateSelection();
-        DrawChessboard();
-
-        if (Input.GetMouseButtonDown (0))
+        if (isWhiteTurn == true)
         {
-            if(selectionX >= 0 && selectionY >= 0)
+            UpdateSelection();
+            DrawChessboard();
+
+            if (Input.GetMouseButtonDown(0))
             {
-                if(selectedChessman == null)
+                if (selectionX >= 0 && selectionY >= 0)
                 {
-                    //Select the chessman
-                    SelectChessman(selectionX, selectionY);
-                }
-                else
-                {
-                    //Move the Chessman
-                    MoveChessman(selectionX, selectionY);
+                    if (selectedChessman == null)
+                    {
+                        //Select the chessman
+                        SelectChessman(selectionX, selectionY);
+                    }
+                    else
+                    {
+                        //Move the Chessman
+                        MoveChessman(selectedChessman, selectionX, selectionY);
+                    }
                 }
             }
+        }
+        else
+        {
+            List<Move> moves = IterateMoves();
+            Move m = GetRandomMove(moves);
+            MoveChessman(m.GetChessman(), m.GetNewX(), m.GetNewY());
         }
 	}
 
@@ -191,7 +208,7 @@ public class BoardManager : MonoBehaviour {
             return;
 
         bool hasAtleastOneMove = false;
-        allowedMoves = Chessmans[x, y].PossibleMove();
+        bool[,] allowedMoves = Chessmans[x, y].PossibleMove();
         for (int i = 0; i < 8; i++)
             for (int j = 0; j < 8; j++)
                 if (allowedMoves[i, j])
@@ -209,8 +226,10 @@ public class BoardManager : MonoBehaviour {
         BoardHighlights.Instance.HighlightAllowedMoves(allowedMoves);
     }
     
-    private void MoveChessman(int x, int y)
+    private void MoveChessman(Chessman pieceToMove, int x, int y)
     {
+        bool[,] allowedMoves = pieceToMove.PossibleMove();
+
         if (allowedMoves[x,y])
         {
             Chessman c = Chessmans[x, y];
@@ -248,19 +267,19 @@ public class BoardManager : MonoBehaviour {
             EnPassantMove[0] = -1;
             EnPassantMove[1] = -1;
 
-            if(selectedChessman.GetType() == typeof(Pawn))
+            if(c != null && c.GetType() == typeof(Pawn))
             {
                 if(y == 7)
                 {
-                    activeChessman.Remove(selectedChessman.gameObject);
-                    Destroy(selectedChessman.gameObject);
+                    activeChessman.Remove(c.gameObject);                    
+                    Destroy(c.gameObject);
                     SpawnChessman(1, x, y);
                     selectedChessman = Chessmans[x, y];
                 }
                 else if (y == 0)
                 {
-                    activeChessman.Remove(selectedChessman.gameObject);
-                    Destroy(selectedChessman.gameObject);
+                    activeChessman.Remove(c.gameObject);
+                    Destroy(c.gameObject);
                     SpawnChessman(7, x, y);
                     selectedChessman = Chessmans[x, y];
                 }
@@ -277,16 +296,20 @@ public class BoardManager : MonoBehaviour {
                 }
             }
 
-            Chessmans [selectedChessman.CurrentX, selectedChessman.CurrentY] = null;
-            selectedChessman.transform.position = GetTileCenter(x, y);
-            selectedChessman.SetPosition(x, y);
-            Chessmans [x, y] = selectedChessman;
+            Chessmans [pieceToMove.CurrentX, pieceToMove.CurrentY] = null;
+            pieceToMove.transform.position = GetTileCenter(x, y);
+            pieceToMove.SetPosition(x, y);
+            Chessmans [x, y] = pieceToMove;
             isWhiteTurn = !isWhiteTurn;
         }
 
-        selectedChessman.GetComponent<MeshRenderer>().material = previousMat;
-        BoardHighlights.Instance.HideHighlights();
-        selectedChessman = null;
+        if(isWhiteTurn == true)
+        {
+            selectedChessman.GetComponent<MeshRenderer>().material = previousMat;
+            BoardHighlights.Instance.HideHighlights();
+            selectedChessman = null;
+        }
+        
     }
 
     private void EndGame()
@@ -302,6 +325,46 @@ public class BoardManager : MonoBehaviour {
         isWhiteTurn = true;
         BoardHighlights.Instance.HideHighlights();
         SpawnAllChessmans();
+    }
+
+    private List<Move> IterateMoves()
+    {
+        List<Move> moves = new List<Move>();
+
+        foreach(Chessman c in Chessmans) {
+
+            if(c != null && c.isWhite == false)
+            {
+                bool[,] _moves = c.PossibleMove();
+
+                for(int i = 0; i < 8; i++)
+                {
+                    for(int j = 0; j < 8; j++)
+                    {
+                        if(_moves[i,j] == true)
+                        {
+
+                            moves.Add(new Assets.Move(c, i, j));
+                        }
+                    }                
+                }
+            }
+        }
+
+        return moves;
+    }
+
+
+    private Move GetRandomMove(List<Move> moves)
+    {
+        System.Random random = new System.Random();
+        int randomNumber = random.Next(0, moves.Count);
+
+        Move moveToMake = moves[randomNumber];
+
+        return moveToMake;
+        
+
     }
 }
 

@@ -121,7 +121,7 @@ public class Queen : Chessman
         {
             i++;
             j++;
-            if (i < 0 || j >= 8)
+            if (i >= 8 || j >= 8)
                 break;
 
             c = BoardManager.Instance.Chessmans[i, j];

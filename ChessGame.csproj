@@ -18,7 +18,7 @@
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>5.5.1f1</UnityVersion>
     <RootNamespace></RootNamespace>
-    <LangVersion Condition=" '$(VisualStudioVersion)' != '10.0' ">4</LangVersion>
+    <LangVersion>4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -73,12 +73,6 @@
     <Reference Include="UnityEditor">
       <HintPath>Library\UnityAssemblies\UnityEditor.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEditor.iOS.Extensions.Xcode">
-      <HintPath>Library\UnityAssemblies\UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEditor.iOS.Extensions.Common">
-      <HintPath>Library\UnityAssemblies\UnityEditor.iOS.Extensions.Common.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="ChessGame.Plugins.csproj">
@@ -88,11 +82,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Bishop.cs" />
+    <Compile Include="Assets\Board.cs" />
     <Compile Include="Assets\BoardHighlights.cs" />
     <Compile Include="Assets\BoardManager.cs" />
     <Compile Include="Assets\Chessman.cs" />
     <Compile Include="Assets\King.cs" />
     <Compile Include="Assets\Knight.cs" />
+    <Compile Include="Assets\Move.cs" />
     <Compile Include="Assets\Pawn.cs" />
     <Compile Include="Assets\Queen.cs" />
     <Compile Include="Assets\Rook.cs" />

@@ -51,3 +51,4 @@ C:\Users\willi\Documents\ChessGame\Temp\bin\Debug\UnityEditor.iOS.Extensions.Xco
 C:\Users\willi\Documents\ChessGame\obj\Debug\Assembly-CSharp-Editor-firstpass.csprojResolveAssemblyReference.cache
 C:\Users\willi\Documents\ChessGame\obj\Debug\Assembly-CSharp-Editor-firstpass.dll
 C:\Users\willi\Documents\ChessGame\obj\Debug\Assembly-CSharp-Editor-firstpass.pdb
+C:\Users\willi\Documents\ChessGame\Temp\bin\Debug\Assembly-CSharp-firstpass.pdb
