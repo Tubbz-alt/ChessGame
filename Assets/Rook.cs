@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Rook : Chessman
+public class Rook : Piece
 {
-    public override string GetChessmanType()
+    public override string GetPieceType()
     {
         return "Rook";
     }
@@ -12,7 +12,7 @@ public class Rook : Chessman
     public override bool[,] PossibleMove()
     {
         bool[,] r = new bool[8, 8];
-        Chessman c, c2;
+        Piece c, c2;
         int i;
 
         //Right
@@ -23,7 +23,7 @@ public class Rook : Chessman
             if (i >= 8)
                 break;
 
-            c = BoardManager.Instance.Chessmans[i, CurrentY];
+            c = BoardManager.Instance.currentBoard[i, CurrentY];
             if (c == null)
                 r[i, CurrentY] = true;
             else
@@ -42,7 +42,7 @@ public class Rook : Chessman
             if (i < 0)
                 break;
 
-            c = BoardManager.Instance.Chessmans[i, CurrentY];
+            c = BoardManager.Instance.currentBoard[i, CurrentY];
             if (c == null)
                 r[i, CurrentY] = true;
             else
@@ -61,7 +61,7 @@ public class Rook : Chessman
             if (i >= 8)
                 break;
 
-            c = BoardManager.Instance.Chessmans[CurrentX, i];
+            c = BoardManager.Instance.currentBoard[CurrentX, i];
             if (c == null)
                 r[CurrentX, i] = true;
             else
@@ -81,7 +81,7 @@ public class Rook : Chessman
             if (i < 0)
                 break;
 
-            c = BoardManager.Instance.Chessmans[CurrentX, i];
+            c = BoardManager.Instance.currentBoard[CurrentX, i];
             if (c == null)
                 r[CurrentX, i] = true;
             else

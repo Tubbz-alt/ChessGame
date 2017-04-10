@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Chessman : MonoBehaviour
+public abstract class Piece : MonoBehaviour
 {
     public int CurrentX { set; get; }
     public int CurrentY { set; get; }
@@ -19,5 +19,5 @@ public abstract class Chessman : MonoBehaviour
         return new bool[8,8];
     }
 
-    public abstract string GetChessmanType();
+    public abstract string GetPieceType();
 }

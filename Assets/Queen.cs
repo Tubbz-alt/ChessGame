@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Queen : Chessman
+public class Queen : Piece
 {
-    public override string GetChessmanType()
+    public override string GetPieceType()
     {
         return "Queen";
     }
@@ -12,7 +12,7 @@ public class Queen : Chessman
     public override bool[,] PossibleMove()
     {
         bool[,] r = new bool[8, 8];
-        Chessman c;
+        Piece c;
         int i, j;
 
         //Right
@@ -23,7 +23,7 @@ public class Queen : Chessman
             if (i >= 8)
                 break;
 
-            c = BoardManager.Instance.Chessmans[i, CurrentY];
+            c = BoardManager.Instance.currentBoard[i, CurrentY];
             if (c == null)
                 r[i, CurrentY] = true;
             else
@@ -42,7 +42,7 @@ public class Queen : Chessman
             if (i < 0)
                 break;
 
-            c = BoardManager.Instance.Chessmans[i, CurrentY];
+            c = BoardManager.Instance.currentBoard[i, CurrentY];
             if (c == null)
                 r[i, CurrentY] = true;
             else
@@ -61,7 +61,7 @@ public class Queen : Chessman
             if (i >= 8)
                 break;
 
-            c = BoardManager.Instance.Chessmans[CurrentX, i];
+            c = BoardManager.Instance.currentBoard[CurrentX, i];
             if (c == null)
                 r[CurrentX, i] = true;
             else
@@ -81,7 +81,7 @@ public class Queen : Chessman
             if (i < 0)
                 break;
 
-            c = BoardManager.Instance.Chessmans[CurrentX, i];
+            c = BoardManager.Instance.currentBoard[CurrentX, i];
             if (c == null)
                 r[CurrentX, i] = true;
             else
@@ -102,7 +102,7 @@ public class Queen : Chessman
             if (i < 0 || j >= 8)
                 break;
 
-            c = BoardManager.Instance.Chessmans[i, j];
+            c = BoardManager.Instance.currentBoard[i, j];
             if (c == null)
                 r[i, j] = true;
             else
@@ -124,7 +124,7 @@ public class Queen : Chessman
             if (i >= 8 || j >= 8)
                 break;
 
-            c = BoardManager.Instance.Chessmans[i, j];
+            c = BoardManager.Instance.currentBoard[i, j];
             if (c == null)
                 r[i, j] = true;
             else
@@ -146,7 +146,7 @@ public class Queen : Chessman
             if (i < 0 || j < 0)
                 break;
 
-            c = BoardManager.Instance.Chessmans[i, j];
+            c = BoardManager.Instance.currentBoard[i, j];
             if (c == null)
                 r[i, j] = true;
             else
@@ -168,7 +168,7 @@ public class Queen : Chessman
             if (i >= 8 || j < 0)
                 break;
 
-            c = BoardManager.Instance.Chessmans[i, j];
+            c = BoardManager.Instance.currentBoard[i, j];
             if (c == null)
                 r[i, j] = true;
             else

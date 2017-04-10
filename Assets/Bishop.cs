@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Bishop : Chessman
+public class Bishop : Piece
 {
-    public override string GetChessmanType()
+    public override string GetPieceType()
     {
         return "Bishop";
     }
@@ -13,7 +13,7 @@ public class Bishop : Chessman
     public override bool[,] PossibleMove()
     {
         bool[,] r = new bool[8, 8];
-        Chessman c;
+        Piece c;
         int i, j;
 
         //Top Left
@@ -26,7 +26,7 @@ public class Bishop : Chessman
             if (i < 0 || j >= 8)
                 break;
 
-            c = BoardManager.Instance.Chessmans[i, j];
+            c = BoardManager.Instance.currentBoard[i, j];
             if (c == null)
                 r[i, j] = true;
             else
@@ -48,7 +48,7 @@ public class Bishop : Chessman
             if (i >= 8 || j >= 8)
                 break;
 
-            c = BoardManager.Instance.Chessmans[i, j];
+            c = BoardManager.Instance.currentBoard[i, j];
             if (c == null)
                 r[i, j] = true;
             else
@@ -70,7 +70,7 @@ public class Bishop : Chessman
             if (i < 0 || j < 0)
                 break;
 
-            c = BoardManager.Instance.Chessmans[i, j];
+            c = BoardManager.Instance.currentBoard[i, j];
             if (c == null)
                 r[i, j] = true;
             else
@@ -92,7 +92,7 @@ public class Bishop : Chessman
             if (i >= 8 || j < 0)
                 break;
 
-            c = BoardManager.Instance.Chessmans[i, j];
+            c = BoardManager.Instance.currentBoard[i, j];
             if (c == null)
                 r[i, j] = true;
             else

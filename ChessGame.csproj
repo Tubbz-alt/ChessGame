@@ -13,11 +13,13 @@
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile></CompilerResponseFile>
+    <CompilerResponseFile>
+    </CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows:5</UnityBuildTarget>
     <UnityVersion>5.5.1f1</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <LangVersion>4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -81,16 +83,18 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\AI.cs" />
     <Compile Include="Assets\Bishop.cs" />
-    <Compile Include="Assets\Board.cs" />
     <Compile Include="Assets\BoardHighlights.cs" />
     <Compile Include="Assets\BoardManager.cs" />
-    <Compile Include="Assets\Chessman.cs" />
+    <Compile Include="Assets\MiniMax.cs" />
+    <Compile Include="Assets\Piece.cs" />
     <Compile Include="Assets\King.cs" />
     <Compile Include="Assets\Knight.cs" />
     <Compile Include="Assets\Move.cs" />
     <Compile Include="Assets\Pawn.cs" />
     <Compile Include="Assets\Queen.cs" />
+    <Compile Include="Assets\RandomMoveGenerator.cs" />
     <Compile Include="Assets\Rook.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Pawn : Chessman {
+public class Pawn : Piece {
 
-    public override string GetChessmanType()
+    public override string GetPieceType()
     {
         return "Pawn";
     }
@@ -12,7 +12,7 @@ public class Pawn : Chessman {
     public override bool[,] PossibleMove()
     {
         bool[,] r = new bool[8, 8];
-        Chessman c, c2;
+        Piece c, c2;
         int[] e = BoardManager.Instance.EnPassantMove;
 
         //White team move
@@ -27,7 +27,7 @@ public class Pawn : Chessman {
                     r[CurrentX - 1, CurrentY + 1] = true;
                 }
 
-                c = BoardManager.Instance.Chessmans[CurrentX - 1, CurrentY + 1];
+                c = BoardManager.Instance.currentBoard[CurrentX - 1, CurrentY + 1];
                 if (c != null && !c.isWhite)
                 {
                     r[CurrentX - 1, CurrentY + 1] = true;
@@ -43,22 +43,22 @@ public class Pawn : Chessman {
                     r[CurrentX + 1, CurrentY + 1] = true;
                 }
 
-                c = BoardManager.Instance.Chessmans[CurrentX + 1, CurrentY + 1];
+                c = BoardManager.Instance.currentBoard[CurrentX + 1, CurrentY + 1];
                 if (c != null && !c.isWhite)
                     r[CurrentX + 1, CurrentY + 1] = true;
             }
             //Middle
             if(CurrentY != 7)
             {
-                c = BoardManager.Instance.Chessmans[CurrentX, CurrentY + 1];
+                c = BoardManager.Instance.currentBoard[CurrentX, CurrentY + 1];
                 if (c == null)
                     r[CurrentX, CurrentY + 1] = true;
             }
             //Middle on first move
             if(CurrentY == 1)
             {
-                c = BoardManager.Instance.Chessmans[CurrentX, CurrentY + 1];
-                c2 = BoardManager.Instance.Chessmans[CurrentX, CurrentY + 2];
+                c = BoardManager.Instance.currentBoard[CurrentX, CurrentY + 1];
+                c2 = BoardManager.Instance.currentBoard[CurrentX, CurrentY + 2];
                 if (c == null & c2 == null)
                     r[CurrentX, CurrentY + 2] = true;
             }
@@ -74,7 +74,7 @@ public class Pawn : Chessman {
                     r[CurrentX - 1, CurrentY - 1] = true;
                 }
 
-                c = BoardManager.Instance.Chessmans[CurrentX - 1, CurrentY - 1];
+                c = BoardManager.Instance.currentBoard[CurrentX - 1, CurrentY - 1];
                 if (c != null && c.isWhite)
                     r[CurrentX - 1, CurrentY - 1] = true;
             }
@@ -87,22 +87,22 @@ public class Pawn : Chessman {
                     r[CurrentX + 1, CurrentY - 1] = true;
                 }
 
-                c = BoardManager.Instance.Chessmans[CurrentX + 1, CurrentY - 1];
+                c = BoardManager.Instance.currentBoard[CurrentX + 1, CurrentY - 1];
                 if (c != null && c.isWhite)
                     r[CurrentX + 1, CurrentY - 1] = true;
             }
             //Middle
             if (CurrentY != 0)
             {
-                c = BoardManager.Instance.Chessmans[CurrentX, CurrentY - 1];
+                c = BoardManager.Instance.currentBoard[CurrentX, CurrentY - 1];
                 if (c == null)
                     r[CurrentX, CurrentY - 1] = true;
             }
             //Middle on first move
             if (CurrentY == 6)
             {
-                c = BoardManager.Instance.Chessmans[CurrentX, CurrentY - 1];
-                c2 = BoardManager.Instance.Chessmans[CurrentX, CurrentY - 2];
+                c = BoardManager.Instance.currentBoard[CurrentX, CurrentY - 1];
+                c2 = BoardManager.Instance.currentBoard[CurrentX, CurrentY - 2];
                 if (c == null & c2 == null)
                     r[CurrentX, CurrentY - 2] = true;
             }

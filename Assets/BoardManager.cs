@@ -8,8 +8,8 @@ public class BoardManager : MonoBehaviour {
 
     public static BoardManager Instance{ set; get; }
 
-    public Chessman[,] Chessmans { set; get; }
-    private Chessman selectedChessman;
+    public Piece[,] currentBoard { set; get; }
+    private Piece selectedPiece;
 
 	private const float TILE_SIZE = 1.0f;
 	private const float TILE_OFFSET = 0.5f;
@@ -17,8 +17,8 @@ public class BoardManager : MonoBehaviour {
 	private int selectionX = -1;
 	private int selectionY = -1;
 
-    public List<GameObject> chessmanPrefabs;
-    private List<GameObject> activeChessman;
+    public List<GameObject> piecePrefabs;
+    private List<GameObject> activePiece;
 
     private Material previousMat;
     public Material selectedMat;
@@ -29,68 +29,72 @@ public class BoardManager : MonoBehaviour {
 
     public bool isWhiteTurn = true;
 
+    private readonly int DEPTH = 1;
+    private int currentDepth = 0;
+    private AI deepBlue;
+
     private void Start()
     {
         Instance = this;
-        SpawnAllChessmans();
+        SpawnAllPieces();
     }
 
-    private void SpawnAllChessmans()
+    private void SpawnAllPieces()
     {
-        activeChessman = new List<GameObject>();
-        Chessmans = new Chessman[8,8];
+        activePiece = new List<GameObject>();
+        currentBoard = new Piece[8,8];
         EnPassantMove = new int[2] { -1, -1 };
 
         // spawn the white team
 
         //king 
-        SpawnChessman(0, 3, 0);
+        SpawnPiece(0, 3, 0);
 
         //queen
-        SpawnChessman(1, 4, 0);
+        SpawnPiece(1, 4, 0);
 
         //rooks
-        SpawnChessman(2, 0, 0);
-        SpawnChessman(2, 7, 0);
+        SpawnPiece(2, 0, 0);
+        SpawnPiece(2, 7, 0);
 
         //bishops
-        SpawnChessman(3, 2, 0);
-        SpawnChessman(3, 5, 0);
+        SpawnPiece(3, 2, 0);
+        SpawnPiece(3, 5, 0);
 
         //knights
-        SpawnChessman(4, 1, 0);
-        SpawnChessman(4, 6, 0);
+        SpawnPiece(4, 1, 0);
+        SpawnPiece(4, 6, 0);
 
         //pawns
         for(int i = 0; i < 8; i++)
         {
-            SpawnChessman(5, i, 1);
+            SpawnPiece(5, i, 1);
         }
 
         //spawn the black team
 
         //king 
-        SpawnChessman(6, 4, 7);
+        SpawnPiece(6, 4, 7);
 
         //queen
-        SpawnChessman(7, 3, 7);
+        SpawnPiece(7, 3, 7);
 
         //rooks
-        SpawnChessman(8, 0, 7);
-        SpawnChessman(8, 7, 7);
+        SpawnPiece(8, 0, 7);
+        SpawnPiece(8, 7, 7);
 
         //bishops
-        SpawnChessman(9, 2, 7);
-        SpawnChessman(9, 5, 7);
+        SpawnPiece(9, 2, 7);
+        SpawnPiece(9, 5, 7);
 
         //knights
-        SpawnChessman(10, 1, 7);
-        SpawnChessman(10, 6, 7);
+        SpawnPiece(10, 1, 7);
+        SpawnPiece(10, 6, 7);
 
         //pawns
         for (int i = 0; i < 8; i++)
         {
-            SpawnChessman(11, i, 6);
+            SpawnPiece(11, i, 6);
         }
     }
 	// Use this for initialization
@@ -121,21 +125,21 @@ public class BoardManager : MonoBehaviour {
         }
 	}
 
-    private void SpawnChessman(int index, int x, int y)
+    private void SpawnPiece(int index, int x, int y)
     {
-        GameObject go = Instantiate(chessmanPrefabs[index], GetTileCenter(x,y), orientation) as GameObject;
+        GameObject go = Instantiate(piecePrefabs[index], GetTileCenter(x,y), orientation) as GameObject;
         go.transform.SetParent(transform);
-        Chessmans [x, y] = go.GetComponent<Chessman> ();
-		Chessman debug = go.GetComponent<Chessman> ();
-        Chessmans [x, y].SetPosition(x, y);
+        currentBoard [x, y] = go.GetComponent<Piece> ();
+		Piece debug = go.GetComponent<Piece> ();
+        currentBoard [x, y].SetPosition(x, y);
 
         if (y == 6 || y == 7) {
-            Chessmans[x, y].isWhite = false;
+            currentBoard[x, y].isWhite = false;
         } else
         {
-            Chessmans[x, y].isWhite = true;
+            currentBoard[x, y].isWhite = true;
         }
-        activeChessman.Add (go);
+        activePiece.Add (go);
     }
 	
     private void UpdateSelection()
@@ -178,37 +182,50 @@ public class BoardManager : MonoBehaviour {
             {
                 if (selectionX >= 0 && selectionY >= 0)
                 {
-                    if (selectedChessman == null)
+                    if (selectedPiece == null)
                     {
                         //Select the chessman
-                        SelectChessman(selectionX, selectionY);
+                        SelectPiece(selectionX, selectionY);
                     }
                     else
                     {
                         //Move the Chessman
-                        MoveChessman(selectedChessman, selectionX, selectionY);
+                        MovePiece(selectedPiece, selectionX, selectionY);
                     }
                 }
             }
         }
         else
         {
-            List<Move> moves = IterateMoves();
-            Move m = GetRandomMove(moves);
-            MoveChessman(m.GetChessman(), m.GetNewX(), m.GetNewY());
+            // black turn == false, white turn == true
+
+            string selector = "minimax";
+            if(selector.Equals("rando"))
+            {
+                RandomMoveGenerator deepBlue = new RandomMoveGenerator();
+                List<Move> moves = deepBlue.IterateMoves(currentBoard, false);
+                Move m = deepBlue.GetRandomMove(moves);
+                MovePiece(m.GetChessman(), m.GetNewX(), m.GetNewY());
+            }
+            else if(selector.Equals("minimax"))
+            {
+                MiniMax minimax = new MiniMax();
+                Move m = minimax.FindMove(currentBoard);
+                MovePiece(m.GetChessman(), m.GetNewX(), m.GetNewY());
+            }
         }
 	}
 
-    private void SelectChessman(int x, int y)
+    private void SelectPiece(int x, int y)
     {
-        if(Chessmans[x,y] == null)
+        if(currentBoard[x,y] == null)
             return;
 
-        if (Chessmans[x, y].isWhite != isWhiteTurn)
+        if (currentBoard[x, y].isWhite != isWhiteTurn)
             return;
 
         bool hasAtleastOneMove = false;
-        bool[,] allowedMoves = Chessmans[x, y].PossibleMove();
+        bool[,] allowedMoves = currentBoard[x, y].PossibleMove();
         for (int i = 0; i < 8; i++)
             for (int j = 0; j < 8; j++)
                 if (allowedMoves[i, j])
@@ -219,20 +236,20 @@ public class BoardManager : MonoBehaviour {
             return;
         }
 
-        selectedChessman = Chessmans[x, y];
-        previousMat = selectedChessman.GetComponent<MeshRenderer>().material;
+        selectedPiece = currentBoard[x, y];
+        previousMat = selectedPiece.GetComponent<MeshRenderer>().material;
         selectedMat.mainTexture = previousMat.mainTexture;
-        selectedChessman.GetComponent<MeshRenderer>().material = selectedMat;
+        selectedPiece.GetComponent<MeshRenderer>().material = selectedMat;
         BoardHighlights.Instance.HighlightAllowedMoves(allowedMoves);
     }
     
-    private void MoveChessman(Chessman pieceToMove, int x, int y)
+    private void MovePiece(Piece pieceToMove, int x, int y)
     {
         bool[,] allowedMoves = pieceToMove.PossibleMove();
 
         if (allowedMoves[x,y])
         {
-            Chessman c = Chessmans[x, y];
+            Piece c = currentBoard[x, y];
 
             if (c != null && c.isWhite != isWhiteTurn)
             {
@@ -245,7 +262,7 @@ public class BoardManager : MonoBehaviour {
                     return;
                 }
 
-                activeChessman.Remove(c.gameObject);
+                activePiece.Remove(c.gameObject);
                 Destroy(c.gameObject);
             }
 
@@ -253,14 +270,14 @@ public class BoardManager : MonoBehaviour {
             {
                 if(isWhiteTurn)
                 {
-                    c = Chessmans[x, y - 1];
-                    activeChessman.Remove(c.gameObject);
+                    c = currentBoard[x, y - 1];
+                    activePiece.Remove(c.gameObject);
                     Destroy(c.gameObject);
                 }
                 else
                 {
-                    c = Chessmans[x, y + 1];
-                    activeChessman.Remove(c.gameObject);
+                    c = currentBoard[x, y + 1];
+                    activePiece.Remove(c.gameObject);
                     Destroy(c.gameObject);
                 }
             }
@@ -271,43 +288,43 @@ public class BoardManager : MonoBehaviour {
             {
                 if(y == 7)
                 {
-                    activeChessman.Remove(c.gameObject);                    
+                    activePiece.Remove(c.gameObject);                    
                     Destroy(c.gameObject);
-                    SpawnChessman(1, x, y);
-                    selectedChessman = Chessmans[x, y];
+                    SpawnPiece(1, x, y);
+                    selectedPiece = currentBoard[x, y];
                 }
                 else if (y == 0)
                 {
-                    activeChessman.Remove(c.gameObject);
+                    activePiece.Remove(c.gameObject);
                     Destroy(c.gameObject);
-                    SpawnChessman(7, x, y);
-                    selectedChessman = Chessmans[x, y];
+                    SpawnPiece(7, x, y);
+                    selectedPiece = currentBoard[x, y];
                 }
 
-                if (selectedChessman.CurrentY == 1 && y == 3)
+                if (selectedPiece.CurrentY == 1 && y == 3)
                 {
                     EnPassantMove[0] = x;
                     EnPassantMove[1] = y - 1;
                 }
-                else if (selectedChessman.CurrentY == 6 && y == 4)
+                else if (selectedPiece.CurrentY == 6 && y == 4)
                 {
                     EnPassantMove[0] = x;
                     EnPassantMove[1] = y + 1;
                 }
             }
 
-            Chessmans [pieceToMove.CurrentX, pieceToMove.CurrentY] = null;
+            currentBoard [pieceToMove.CurrentX, pieceToMove.CurrentY] = null;
             pieceToMove.transform.position = GetTileCenter(x, y);
             pieceToMove.SetPosition(x, y);
-            Chessmans [x, y] = pieceToMove;
+            currentBoard [x, y] = pieceToMove;
             isWhiteTurn = !isWhiteTurn;
         }
 
         if(isWhiteTurn == true)
         {
-            selectedChessman.GetComponent<MeshRenderer>().material = previousMat;
+            selectedPiece.GetComponent<MeshRenderer>().material = previousMat;
             BoardHighlights.Instance.HideHighlights();
-            selectedChessman = null;
+            selectedPiece = null;
         }
         
     }
@@ -319,52 +336,21 @@ public class BoardManager : MonoBehaviour {
         else
             Debug.Log("Black team wins");
 
-        foreach (GameObject go in activeChessman)
+        foreach (GameObject go in activePiece)
             Destroy(go);
 
         isWhiteTurn = true;
         BoardHighlights.Instance.HideHighlights();
-        SpawnAllChessmans();
+        SpawnAllPieces();
     }
 
-    private List<Move> IterateMoves()
-    {
-        List<Move> moves = new List<Move>();
+    
 
-        foreach(Chessman c in Chessmans) {
-
-            if(c != null && c.isWhite == false)
-            {
-                bool[,] _moves = c.PossibleMove();
-
-                for(int i = 0; i < 8; i++)
-                {
-                    for(int j = 0; j < 8; j++)
-                    {
-                        if(_moves[i,j] == true)
-                        {
-
-                            moves.Add(new Assets.Move(c, i, j));
-                        }
-                    }                
-                }
-            }
-        }
-
-        return moves;
-    }
+    
 
 
-    private Move GetRandomMove(List<Move> moves)
-    {
-        System.Random random = new System.Random();
-        int randomNumber = random.Next(0, moves.Count);
 
-        Move moveToMake = moves[randomNumber];
 
-        return moveToMake;
-        
-
-    }
+    
 }
 

@@ -14,9 +14,9 @@ namespace Assets
         private int newX;
         private int newY;
 
-        private Chessman chessman;
+        private Piece chessman;
 
-        public Move(Chessman cm, int _newX, int _newY)
+        public Move(Piece cm, int _newX, int _newY)
         {
             oldX = cm.CurrentX;
             oldY = cm.CurrentY;
@@ -99,7 +99,7 @@ namespace Assets
             return newY;
         }
 
-        public Chessman GetChessman()
+        public Piece GetChessman()
         {
             return chessman;
         }

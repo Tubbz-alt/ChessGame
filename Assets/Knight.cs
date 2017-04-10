@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Knight : Chessman {
+public class Knight : Piece {
 
-    public override string GetChessmanType()
+    public override string GetPieceType()
     {
         return "Knight";
     }
@@ -41,10 +41,10 @@ public class Knight : Chessman {
 
     public void KnightMove(int x, int y, ref bool[,] r)
     {
-        Chessman c;
+        Piece c;
         if(x >= 0 && x< 8 && y>= 0 && y < 8)
         {
-            c = BoardManager.Instance.Chessmans[x, y];
+            c = BoardManager.Instance.currentBoard[x, y];
             if (c == null)
                 r[x, y] = true;
             else if (isWhite != c.isWhite)

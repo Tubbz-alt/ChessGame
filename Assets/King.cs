@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class King : Chessman
+public class King : Piece
 {
 
-    public override string GetChessmanType()
+    public override string GetPieceType()
     {
         return "King";
     }
@@ -14,7 +14,7 @@ public class King : Chessman
     {
         bool[,] r = new bool[8, 8];
 
-        Chessman c;
+        Piece c;
         int i, j;
 
         //Top Side
@@ -26,7 +26,7 @@ public class King : Chessman
             {
                 if(i >= 0 || i < 8)
                 {
-                    c = BoardManager.Instance.Chessmans[i, j];
+                    c = BoardManager.Instance.currentBoard[i, j];
                     if (c == null)
                         r[i, j] = true;
                     else if (isWhite != c.isWhite)
@@ -46,7 +46,7 @@ public class King : Chessman
             {
                 if (i >= 0 || i < 8)
                 {
-                    c = BoardManager.Instance.Chessmans[i, j];
+                    c = BoardManager.Instance.currentBoard[i, j];
                     if (c == null)
                         r[i, j] = true;
                     else if (isWhite != c.isWhite)
@@ -60,7 +60,7 @@ public class King : Chessman
         //Middle Left
         if(CurrentX != 0)
         {
-            c = BoardManager.Instance.Chessmans[CurrentX - 1, CurrentY];
+            c = BoardManager.Instance.currentBoard[CurrentX - 1, CurrentY];
             if (c == null)
                 r[CurrentX - 1, CurrentY] = true;
             else if (isWhite != c.isWhite)
@@ -70,7 +70,7 @@ public class King : Chessman
         //Middle Right
         if (CurrentX != 7)
         {
-            c = BoardManager.Instance.Chessmans[CurrentX + 1, CurrentY];
+            c = BoardManager.Instance.currentBoard[CurrentX + 1, CurrentY];
             if (c == null)
                 r[CurrentX + 1, CurrentY] = true;
             else if (isWhite != c.isWhite)
