@@ -32,7 +32,7 @@ namespace Assets
 				 * calls evaluatePosition on each possible board and if the score is higher than previous,
 				 * reset the bestMove
 				 */
-                int score = EvaluatePosition(possibleBoards[i], Int32.MinValue, Int32.MaxValue, DEPTH, false);
+                int score = EvaluatePosition(possibleBoards[i], Int32.MinValue, Int32.MaxValue, DEPTH, true);
                 if (score > bestMoveScore)
                 {
                     bestMove = moves[i];
@@ -43,7 +43,19 @@ namespace Assets
                 else if(score == bestMoveScore)
                 {
                     bestMoves.Add(moves[i]);
-                }                
+                    UnityEngine.Debug.Log("------------------");
+                    int j =  0;
+                    foreach (Piece p in possibleBoards[i])
+                    {
+                        if(p != null && p.GetType() == typeof(Pawn))
+                        {
+                            j++;
+                        }
+                        
+                    }
+                    UnityEngine.Debug.Log("num of pawns = " + j);
+                }
+                score = 0;           
             }
 
             Random random = new Random();
@@ -107,24 +119,15 @@ namespace Assets
             }
 
             List<Move> moves = IterateMoves(board, isWhite);
+            List<Piece[,]> boards = GetPossibleBoards(board, moves, isWhite);
 
             if (isWhite == true)
             {
-
-                /*
-			     * This for loop goes through all possible moves and calls evaluatePosition on them,
-			     * changing the color.  Alpha-beta pruning is used here to remove obviously poor moves.
-			     * These are determined by the variables alpha and beta.  All moves where the beta,
-			     * which is the score of the minimizing (in this case white player) is less than or
-			     * equal to alpha are discarded.  
-			     */
                 int newBeta = beta;
-                foreach (Move move in moves)
-                { //for child in node
-                    Piece[,] successorBoard = CopyBoard(board);
-                    successorBoard = PerformMove(successorBoard, move);
-                    
-                    newBeta = Math.Min(newBeta, EvaluatePosition(successorBoard, alpha, beta, depth - 1, !isWhite)); //think about how to change moves
+                foreach (Piece[,] _board in boards)
+                {  
+                                        
+                    newBeta = Math.Min(newBeta, EvaluatePosition(_board, alpha, beta, depth - 1, !isWhite)); //think about how to change moves
                     /*
                     if (newBeta <= alpha)
                     {
@@ -134,25 +137,14 @@ namespace Assets
                 }
                 return newBeta; //returns the highest score of the possible moves
 
-
             }
             else
             {
-
-                /*
-		         * This for loop cycles through all possible moves and 
-		         * calculates a new alpha if the successor board evaluates
-		         * to a higher number than what is currently the highest score,
-		         * which is stored in alpha.  
-		         */
                 
                 int newAlpha = alpha;
-                foreach(Move move in moves)
-                { //for child in node
-                    Piece[,] successorBoard = CopyBoard(board);
-                    successorBoard = PerformMove(successorBoard, move);
-
-                    newAlpha = Math.Max(newAlpha, EvaluatePosition(successorBoard, alpha, beta, depth - 1, !isWhite)); //think about how to change moves
+                foreach(Piece[,] _board in boards)
+                {
+                    newAlpha = Math.Max(newAlpha, EvaluatePosition(_board, alpha, beta, depth - 1, !isWhite)); //think about how to change moves
                     /*
                     if (beta <= newAlpha)
                     {
@@ -180,15 +172,122 @@ namespace Assets
             {
                 for(int j = 0; j < 8; j++)
                 {
-                    if(board[i,j] != null)
+                    if(board[i,j] != null && board[i,j].isWhite == true)
+                    {
+
+                        copy[i, j] = board[i, j];
+                        /*
+                        if (board[i,j].GetType() == typeof(Queen))
+                        {
+                            Queen q = new Queen();
+                            q.CurrentX = i;
+                            q.CurrentY = j;
+                            q.isWhite = true;
+                            copy[i, j] = q;
+                        }
+                        else if (board[i, j].GetType() == typeof(Rook))
+                        {
+                            Rook q = new Rook();
+                            q.CurrentX = i;
+                            q.CurrentY = j;
+                            q.isWhite = true;
+                            copy[i, j] = q;
+                        }
+                        else if (board[i, j].GetType() == typeof(Knight))
+                        {
+                            Knight q = new Knight();
+                            q.CurrentX = i;
+                            q.CurrentY = j;
+                            q.isWhite = true;
+                            copy[i, j] = q;
+                        }
+                        else if(board[i,j].GetType() == typeof(Bishop))
+                        {
+                            Bishop q = new Bishop();
+                            q.CurrentX = i;
+                            q.CurrentY = j;
+                            q.isWhite = true;
+                            copy[i, j] = q;
+                        }
+                        else if (board[i, j].GetType() == typeof(Pawn))
+                        {
+                            Pawn q = new Pawn();
+                            q.CurrentX = i;
+                            q.CurrentY = j;
+                            q.isWhite = true;
+                            copy[i, j] = q;
+                        }
+                        else if (board[i, j].GetType() == typeof(King))
+                        {
+                            King q = new King();
+                            q.CurrentX = i;
+                            q.CurrentY = j;
+                            q.isWhite = true;
+                            copy[i, j] = q;
+                        }
+                        */
+                    }
+                    else if(board[i,j] != null && board[i,j].isWhite == false)
                     {
                         copy[i, j] = board[i, j];
+                        /*
+                        if (board[i, j].GetType() == typeof(Queen))
+                        {
+                            Queen q = new Queen();
+                            q.CurrentX = i;
+                            q.CurrentY = j;
+                            q.isWhite = false;
+                            copy[i, j] = q;
+                        }
+                        else if (board[i, j].GetType() == typeof(Rook))
+                        {
+                            Rook q = new Rook();
+                            q.CurrentX = i;
+                            q.CurrentY = j;
+                            q.isWhite = false;
+                            copy[i, j] = q;
+                        }
+                        else if (board[i, j].GetType() == typeof(Knight))
+                        {
+                            Knight q = new Knight();
+                            q.CurrentX = i;
+                            q.CurrentY = j;
+                            q.isWhite = false;
+                            copy[i, j] = q;
+                        }
+                        else if (board[i, j].GetType() == typeof(Bishop))
+                        {
+                            Bishop q = new Bishop();
+                            q.CurrentX = i;
+                            q.CurrentY = j;
+                            q.isWhite = false;
+                            copy[i, j] = q;
+                        }
+                        else if (board[i, j].GetType() == typeof(Pawn))
+                        {
+                            Pawn q = new Pawn();
+                            q.CurrentX = i;
+                            q.CurrentY = j;
+                            q.isWhite = false;
+                            copy[i, j] = q;
+                        }
+                        else if (board[i, j].GetType() == typeof(King))
+                        {
+                            King q = new King();
+                            q.CurrentX = i;
+                            q.CurrentY = j;
+                            q.isWhite = false;
+                            copy[i, j] = q;
+                        }
+                        */
                     }
                 }
             }
 
             return copy;
         }
+
+
 
         public int evaluate(Piece[,] board)
         {
