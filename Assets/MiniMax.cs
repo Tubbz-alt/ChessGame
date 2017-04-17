@@ -22,7 +22,7 @@ namespace Assets
 
             List<Piece[,]> possibleBoards = GetPossibleBoards(board, moves, false);
             Move bestMove = moves[0];
-            int bestMoveScore = EvaluatePosition(board, Int32.MinValue, Int32.MaxValue, DEPTH, false);
+            int bestMoveScore = EvaluatePosition(board, Int32.MinValue, Int32.MaxValue, DEPTH, true);
 
             List<Move> bestMoves = new List<Move>();
 
@@ -59,11 +59,22 @@ namespace Assets
             }
 
             Random random = new Random();
-            int rand = random.Next(0, bestMoves.Count - 1);
+            int rand;
+            if (bestMoves.Count > 0)
+            {
+                rand = random.Next(0, bestMoves.Count);
+            } else
+            {
+                rand = 0;
+            }
 
-
-
-            return bestMoves[rand];
+            if (bestMoves[0] != null)
+            {
+                return bestMoves[rand];
+            } else
+            {
+                return moves[0];
+            }
         }
 
         public List<Piece[,]> GetPossibleBoards(Piece[,] board, List<Move> moves, bool color)
