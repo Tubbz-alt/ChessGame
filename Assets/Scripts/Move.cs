@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using ChessGame.Pieces;
+using ChessGame.Pieces.Interface;
 
-namespace Assets
+namespace ChessGame
 {
     public class Move
     {
-
         private int oldX;
         private int oldY;
         private int newX;

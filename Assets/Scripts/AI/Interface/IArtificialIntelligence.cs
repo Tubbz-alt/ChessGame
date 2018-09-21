@@ -1,17 +1,12 @@
-﻿using System;
+﻿using ChessGame.Pieces.Interface;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace Assets
+namespace ChessGame.AI.Interface
 {
-    interface AI
+    public interface IArtificialIntelligence
     {
         Move FindMove(Piece[,] board);
         List<Move> IterateMoves(Piece[,] board, bool isWhite);
-
         Piece[,] PerformMove(Piece[,] board, Move move);
-
-
     }
 }

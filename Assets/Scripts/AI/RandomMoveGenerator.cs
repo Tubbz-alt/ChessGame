@@ -1,11 +1,14 @@
-﻿using System;
+﻿using ChessGame;
+using ChessGame.AI.Interface;
+using ChessGame.Pieces.Interface;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Assets
+namespace ChessGame.AI
 {
-    class RandomMoveGenerator : AI
+    class RandomMoveGenerator : IArtificialIntelligence
     {
 
         public Move FindMove(Piece[,] board)
@@ -35,7 +38,7 @@ namespace Assets
                             if (_moves[i, j] == true)
                             {
 
-                                moves.Add(new Assets.Move(c, i, j));
+                                moves.Add(new Move(c, i, j));
                             }
                         }
                     }
