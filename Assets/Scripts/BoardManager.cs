@@ -1,10 +1,10 @@
-﻿using ChessGame.AI.Interface;
-using ChessGame.AI;
-using ChessGame.Pieces;
-using ChessGame.Pieces.Interface;
+﻿using ChessGame.AI;
+using ChessGame.PiecesGameObjects;
+using ChessGame.PiecesGameObjects.Interface;
 using System.Collections.Generic;
 using UnityEngine;
-using ChessGame;
+using Assets.Scripts;
+using ChessGame.BusinessObjects;
 
 namespace ChessGame
 {
@@ -127,11 +127,11 @@ namespace ChessGame
 
             if (y == 6 || y == 7)
             {
-                CurrentBoard[x, y].isWhite = false;
+                CurrentBoard[x, y].IsWhite = false;
             }
             else
             {
-                CurrentBoard[x, y].isWhite = true;
+                CurrentBoard[x, y].IsWhite = true;
             }
 
             activePiece.Add(go);
@@ -185,7 +185,7 @@ namespace ChessGame
                         else
                         {
                             //Move the Chessman
-                            MovePiece(selectedPiece, selectionX, selectionY);
+                            MovePiece(selectedPiece.CurrentX, selectedPiece.CurrentY, selectionX, selectionY);
                         }
                     }
                 }
@@ -197,16 +197,19 @@ namespace ChessGame
                 string selector = "minimax";
                 if (selector.Equals("rando"))
                 {
+                    PiecesEnum[,] mapped = BoardMapper.MapFromGameObjects(CurrentBoard);
+
                     RandomMoveGenerator deepBlue = new RandomMoveGenerator();
-                    List<Move> moves = deepBlue.IterateMoves(CurrentBoard, false);
-                    Move m = deepBlue.GetRandomMove(moves);
-                    MovePiece(m.GetChessman(), m.GetNewX(), m.GetNewY());
+                    Move m = deepBlue.FindMove(mapped);
+                    MovePiece(m.OldX, m.OldY, m.NewX, m.NewY);
                 }
                 else if (selector.Equals("minimax"))
                 {
-                    MiniMax minimax = new MiniMax();
-                    Move m = minimax.FindMove(CurrentBoard);
-                    MovePiece(m.GetChessman(), m.GetNewX(), m.GetNewY());
+                    PiecesEnum[,] mapped = BoardMapper.MapFromGameObjects(CurrentBoard);
+
+                    MiniMax minimax = new MiniMax(2);
+                    Move m = minimax.FindMove(mapped);
+                    MovePiece(m.OldX, m.OldY, m.NewX, m.NewY);
                 }
             }
         }
@@ -216,11 +219,14 @@ namespace ChessGame
             if (CurrentBoard[x, y] == null)
                 return;
 
-            if (CurrentBoard[x, y].isWhite != isWhiteTurn)
+            if (CurrentBoard[x, y].IsWhite != isWhiteTurn)
                 return;
 
             bool hasAtleastOneMove = false;
-            bool[,] allowedMoves = CurrentBoard[x, y].PossibleMove();
+
+            PiecesEnum[,] mapped = BoardMapper.MapFromGameObjects(CurrentBoard);
+            bool[,] allowedMoves = PossibleMoveFinder.FindMoves(mapped, x, y, CurrentBoard[x, y].IsWhite);
+
             for (int i = 0; i < 8; i++)
                 for (int j = 0; j < 8; j++)
                     if (allowedMoves[i, j])
@@ -238,15 +244,16 @@ namespace ChessGame
             BoardHighlights.Instance.HighlightAllowedMoves(allowedMoves);
         }
 
-        private void MovePiece(Piece pieceToMove, int x, int y)
+        private void MovePiece(int _oldX, int _oldY, int _newX, int _newY)
         {
-            bool[,] allowedMoves = pieceToMove.PossibleMove();
-
-            if (allowedMoves[x, y])
+            PiecesEnum[,] mapped = BoardMapper.MapFromGameObjects(CurrentBoard);
+            bool[,] allowedMoves = PossibleMoveFinder.FindMoves(mapped, _oldX, _oldY, CurrentBoard[_oldX, _oldY].IsWhite);
+            
+            if (allowedMoves[_newX, _newY])
             {
-                Piece c = CurrentBoard[x, y];
+                Piece c = CurrentBoard[_newX, _newY];
 
-                if (c != null && c.isWhite != isWhiteTurn)
+                if (c != null && c.IsWhite != isWhiteTurn)
                 {
                     //Capture a piece
 
@@ -261,17 +268,17 @@ namespace ChessGame
                     Destroy(c.gameObject);
                 }
 
-                if (x == EnPassantMove[0] && y == EnPassantMove[1])
+                if (_newX == EnPassantMove[0] && _newY == EnPassantMove[1])
                 {
                     if (isWhiteTurn)
                     {
-                        c = CurrentBoard[x, y - 1];
+                        c = CurrentBoard[_newX, _newY - 1];
                         activePiece.Remove(c.gameObject);
                         Destroy(c.gameObject);
                     }
                     else
                     {
-                        c = CurrentBoard[x, y + 1];
+                        c = CurrentBoard[_newX, _newY + 1];
                         activePiece.Remove(c.gameObject);
                         Destroy(c.gameObject);
                     }
@@ -281,37 +288,39 @@ namespace ChessGame
 
                 if (c != null && c.GetType() == typeof(Pawn))
                 {
-                    if (y == 7)
+                    if (_newY == 7)
                     {
                         activePiece.Remove(c.gameObject);
                         Destroy(c.gameObject);
-                        SpawnPiece(1, x, y);
-                        selectedPiece = CurrentBoard[x, y];
+                        SpawnPiece(1, _newX, _newY);
+                        selectedPiece = CurrentBoard[_newX, _newY];
                     }
-                    else if (y == 0)
+                    else if (_newY == 0)
                     {
                         activePiece.Remove(c.gameObject);
                         Destroy(c.gameObject);
-                        SpawnPiece(7, x, y);
-                        selectedPiece = CurrentBoard[x, y];
+                        SpawnPiece(7, _newX, _newY);
+                        selectedPiece = CurrentBoard[_newX, _newY];
                     }
 
-                    if (selectedPiece.CurrentY == 1 && y == 3)
+                    if (selectedPiece.CurrentY == 1 && _newY == 3)
                     {
-                        EnPassantMove[0] = x;
-                        EnPassantMove[1] = y - 1;
+                        EnPassantMove[0] = _newX;
+                        EnPassantMove[1] = _newY - 1;
                     }
-                    else if (selectedPiece.CurrentY == 6 && y == 4)
+                    else if (selectedPiece.CurrentY == 6 && _newY == 4)
                     {
-                        EnPassantMove[0] = x;
-                        EnPassantMove[1] = y + 1;
+                        EnPassantMove[0] = _newX;
+                        EnPassantMove[1] = _newY + 1;
                     }
                 }
 
+                Piece pieceToMove = CurrentBoard[_oldX, _oldY];
+
                 CurrentBoard[pieceToMove.CurrentX, pieceToMove.CurrentY] = null;
-                pieceToMove.transform.position = GetTileCenter(x, y);
-                pieceToMove.SetPosition(x, y);
-                CurrentBoard[x, y] = pieceToMove;
+                pieceToMove.transform.position = GetTileCenter(_newX, _newY);
+                pieceToMove.SetPosition(_newX, _newY);
+                CurrentBoard[_newX, _newY] = pieceToMove;
                 isWhiteTurn = !isWhiteTurn;
             }
 

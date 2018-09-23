@@ -1,38 +1,50 @@
 ﻿using ChessGame.AI.Interface;
-using ChessGame.Pieces;
-using ChessGame.Pieces.Interface;
 using System;
 using System.Collections.Generic;
+using ChessGame.BusinessObjects;
 
 namespace ChessGame.AI
 {
-    /** white = true, black = false **/
-    public class MiniMax : IArtificialIntelligence
-    {
-        private const int DEPTH = 10;
+    /** 
+     *  
+     *  white = true, 
+     *  black = false 
+     *  alpha = minimum score gaurenteed for the maximizing player
+     *  beta  = maximum score gaurenteed for the minimizing player
+     *  
+     *  **/
 
-        public Move FindMove(Piece[,] board)
+    public class MiniMax : ArtificialIntelligenceBase
+    {
+        private readonly int _depth;        
+
+        public MiniMax(int depth)
+        {
+            _depth = depth;
+        }
+
+        public override Move FindMove(PiecesEnum[,] board)
         {
             Move bestMove = null;
-            List<Move> moves = IterateMoves(board, false);
-            List<Piece[,]> possibleBoards = GetPossibleBoards(board, moves);
+                        
+            List<PossibleBoard> possibleBoards = GetPossibleBoards(board, false);
 
             int currentBestMoveScore = Int32.MinValue;
             List<Move> bestMoves = new List<Move>();
 
-            for (int i = 0; i < possibleBoards.Count; i++)
+            foreach (var p in possibleBoards)
             {
-                int score = FindMinScoreForBoard(possibleBoards[i], Int32.MinValue, Int32.MaxValue, DEPTH);
+                int score = FindMinScoreForBoard(p.Board, Int32.MinValue, Int32.MaxValue, _depth);
                 if (score > currentBestMoveScore)
                 {
-                    bestMove = moves[i];
+                    bestMove = p.Move;
                     currentBestMoveScore = score;
                     bestMoves.Clear();
                     bestMoves.Add(bestMove);
                 }
                 else if(score == currentBestMoveScore)
                 {
-                    bestMoves.Add(moves[i]);
+                    bestMoves.Add(p.Move);
                 }
             }
 
@@ -45,96 +57,24 @@ namespace ChessGame.AI
             }
             
             return bestMoves[rand];
-        }
-
-        public List<Piece[,]> GetPossibleBoards(Piece[,] board, List<Move> moves)
-        {
-            List<Piece[,]> possibleBoards = new List<Piece[,]>();
-
-            foreach (Move m in moves)
-            {
-                Piece[,] temp = new Piece[8, 8];
-                Array.Copy(board, temp, 64);                
-                temp = PerformMove(temp, m);
-                possibleBoards.Add(temp);
-            }
-            
-            return possibleBoards;
-        }
-
-        public List<Move> IterateMoves(Piece[,] board, bool color)
-        {
-            List<Move> moves = new List<Move>();
-            foreach (Piece p in board)
-            {
-                if (p != null && p.isWhite == color)
-                {
-                    bool[,] _moves = p.PossibleMove();
-
-                    for (int i = 0; i < 8; i++)
-                    {
-                        for (int j = 0; j < 8; j++)
-                        {
-                            if (_moves[i, j] == true)
-                            {
-                                moves.Add(new Move(p, i, j));
-                            }
-                        }
-                    }
-                }
-            }     
-            
-            return moves;
-        }
-
-        private int FindMinScoreForBoard(Piece[,] board, int alpha, int beta, int depth) // white minimizes
+        }           
+        
+        private int FindMinScoreForBoard(PiecesEnum[,] board, int alpha, int beta, int depth) // white minimizes
         {
             if (depth == 0)
             {
                 return CalculateScoreForBoard(board);
             }
-
-            List<Move> moves = IterateMoves(board, true);
-            List<Piece[,]> boards = GetPossibleBoards(board, moves);
+            
+            List<PossibleBoard> boards = GetPossibleBoards(board, true);
 
             int value = Int32.MaxValue;
 
-            foreach (Piece[,] _board in boards)
+            foreach (var p in boards)
             {
-                value = Math.Min(value, FindMaxScoreForBoard(_board, alpha, beta, depth - 1));
+                value = Math.Min(value, FindMaxScoreForBoard(p.Board, alpha, beta, depth - 1));
 
                 if (value <= alpha)
-                {
-                    break;
-                }
-
-                if (value > alpha)
-                {
-                    alpha = value;
-                }
-            }
-
-            return value;
-        }
-
-
-        private int FindMaxScoreForBoard(Piece[,] board, int alpha, int beta, int depth) // black maximizes
-        {
-            if (depth == 0)
-            {
-                return CalculateScoreForBoard(board);
-            }
-
-            List<Move> moves = IterateMoves(board, false);
-            List<Piece[,]> boards = GetPossibleBoards(board, moves);
-
-            int value = Int32.MinValue;
-
-            foreach (Piece[,] _board in boards)
-            {
-                value = Math.Max(value, FindMinScoreForBoard(_board, alpha, beta, depth - 1));
-
-                if (value >= beta)
                 {
                     break;
                 }
@@ -148,70 +88,34 @@ namespace ChessGame.AI
             return value;
         }
 
-        public Piece[,] PerformMove(Piece[,] board, Move move)
+
+        private int FindMaxScoreForBoard(PiecesEnum[,] board, int alpha, int beta, int depth) // black maximizes
         {
-            board[move.GetOldX(), move.GetOldY()] = null;
-            board[move.GetNewX(), move.GetNewY()] = move.GetChessman();
-            
-            return board;
-        }
-        
-        public int CalculateScoreForBoard(Piece[,] board)
-        {
-            int whitescore = 0;
-            int blackscore = 0;
-            
-            foreach(Piece p in board)
+            if (depth == 0)
             {
-                if(p != null && p.isWhite == true)
+                return CalculateScoreForBoard(board);
+            }
+            
+            List<PossibleBoard> boards = GetPossibleBoards(board, false);
+
+            int value = Int32.MinValue;
+
+            foreach (var p in boards)
+            {
+                value = Math.Max(value, FindMinScoreForBoard(p.Board, alpha, beta, depth));
+                                
+                if (value >= beta)
                 {
-                    if(p.GetType() == typeof(Queen))
-                    {
-                        whitescore += 9;
-                    }
-                    else if(p.GetType() == typeof(Rook))
-                    {
-                        whitescore += 5;
-                    }
-                    else if(p.GetType() == typeof(Knight) || p.GetType() == typeof(Bishop))
-                    {
-                        whitescore += 3;
-                    }
-                    else if (p.GetType() == typeof(Pawn))
-                    {
-                        whitescore += 1;
-                    }
-                    else if (p.GetType() == typeof(King))
-                    {
-                        whitescore += 1000000;
-                    }
+                    break;
                 }
-                else if (p != null && p.isWhite == false)
+
+                if (value > alpha)
                 {
-                    if (p.GetType() == typeof(Queen))
-                    {
-                        blackscore += 9;
-                    }
-                    else if (p.GetType() == typeof(Rook))
-                    {
-                        blackscore += 5;
-                    }
-                    else if (p.GetType() == typeof(Knight) || p.GetType() == typeof(Bishop))
-                    {
-                        blackscore += 3;
-                    }
-                    else if (p.GetType() == typeof(Pawn))
-                    {
-                        blackscore += 1;
-                    }
-                    else if (p.GetType() == typeof(King))
-                    {
-                        blackscore += 1000000;
-                    }
+                    alpha = value;
                 }
             }
 
-            return blackscore - whitescore;             
-        }
+            return value;
+        }        
     }
 }
