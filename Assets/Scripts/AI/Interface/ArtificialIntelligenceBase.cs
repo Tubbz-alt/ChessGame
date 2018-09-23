@@ -12,7 +12,7 @@ namespace ChessGame.AI.Interface
 
         protected readonly PiecesEnum[] whites = { PiecesEnum.WhitePawn, PiecesEnum.WhiteKnight, PiecesEnum.WhiteBishop, PiecesEnum.WhiteRook, PiecesEnum.WhiteQueen, PiecesEnum.WhiteKing };
         
-        protected virtual List<PossibleBoard> GetPossibleBoards(PiecesEnum[,] board, bool color)
+        protected List<PossibleBoard> GetPossibleBoards(PiecesEnum[,] board, bool color)
         {
             List<Move> moves = GetPossibleMovesForBoard(board, color);
 
@@ -27,34 +27,14 @@ namespace ChessGame.AI.Interface
                 {
                     Board = temp,
                     Move = m
-                });
-
-                int whitecount = 0;
-                int blackcount = 0;
-
-                foreach (var p in temp)
-                {
-                    if (p != PiecesEnum.Empty && whites.Contains(p))
-                    {
-                        whitecount++;
-                    }
-                    else if (p != PiecesEnum.Empty && !whites.Contains(p))
-                    {
-                        blackcount++;
-                    }
-                }
-
-                if (whitecount != blackcount)
-                {
-                    int x = 1;
-                }
+                });                
             }
 
             return possibleBoards;
         }
 
 
-        protected virtual List<Move> GetPossibleMovesForBoard(PiecesEnum[,] board, bool color)
+        protected List<Move> GetPossibleMovesForBoard(PiecesEnum[,] board, bool color)
         {
             List<Move> moves = new List<Move>();
             for (int x = 0; x < 8; x++)
