@@ -1,8 +1,7 @@
-﻿using ChessGame;
-using ChessGame.BusinessObjects;
+﻿using ChessGame.BusinessObjects;
 using System.Linq;
 
-namespace Assets.Scripts
+namespace ChessGame
 {
     public static class PossibleMoveFinder
     {

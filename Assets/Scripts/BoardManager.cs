@@ -1,10 +1,9 @@
-﻿using ChessGame.AI;
+﻿using UnityEngine;
+using ChessGame.AI;
 using ChessGame.PiecesGameObjects;
 using ChessGame.PiecesGameObjects.Interface;
-using System.Collections.Generic;
-using UnityEngine;
-using Assets.Scripts;
 using ChessGame.BusinessObjects;
+using System.Collections.Generic;
 
 namespace ChessGame
 {

@@ -1,5 +1,4 @@
-﻿using Assets.Scripts;
-using ChessGame.BusinessObjects;
+﻿using ChessGame.BusinessObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
